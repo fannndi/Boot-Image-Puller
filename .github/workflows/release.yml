@@ -1,0 +1,41 @@
+name: Build and release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build flashable zip
+        run: |
+          rm -f AK3-BootPuller.zip
+          zip -r AK3-BootPuller.zip META-INF anykernel.sh banner tools
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: Boot Image Puller ${{ github.event.inputs.version || github.ref_name }}
+          body: |
+            ### Boot Image Puller (AnyKernel3)
+
+            Flashable zip untuk dump partisi `boot` ke `/sdcard/boot-<date>-<time>.img`.
+            Aman di-flash berulang kali, tidak menulis/mengubah partisi apa pun.
+
+            Flash `AK3-BootPuller.zip` di TWRP/OrangeFox/root flasher, lalu patch
+            hasilnya dengan Magisk/KernelSU sebelum di-flash balik.
+          files: AK3-BootPuller.zip
