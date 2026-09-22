@@ -1,0 +1,8 @@
+****************************************
+ Farewell Kernel | Boot Image Puller
+ POCO X3/NFC (surya/karna)
+****************************************
+- Dumps the boot partition to
+  /sdcard/boot-<date>-<time>.img
+- Patch it with Magisk/KernelSU, then
+  flash the patched image
